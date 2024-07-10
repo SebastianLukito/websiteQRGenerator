@@ -72,6 +72,18 @@ document.addEventListener('DOMContentLoaded', function () {
         colorPicker.click();
     });
 
+    function updateQRCode() {
+        const chosenBgColor = document.getElementById('chosen-value-bg').value;
+        const chosenQrColor = document.getElementById('chosen-value-qr').value;
+
+        backgroundColor = `#${chosenBgColor}`;
+        qrCodeColor = `#${chosenQrColor}`;
+
+        if (canvas) {
+            generateQRCode();
+        }
+    }
+
     function generateQRCode() {
         const url = document.getElementById('url').value;
         const logoFile = document.getElementById('logo').files[0];
