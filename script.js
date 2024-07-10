@@ -3,8 +3,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const saveBtn = document.getElementById('save-btn');
     const newBtn = document.getElementById('new-btn');
     const qrDisplay = document.getElementById('qr-display');
+    const bgColorBtn = document.getElementById('bg-color-btn');
+    const qrColorBtn = document.getElementById('qr-color-btn');
     let qrCodeData = null;
     let canvas = null;
+    let backgroundColor = '#ffffff'; // default background color
+    let qrCodeColor = '#000000'; // default QR code color
 
     generateBtn.addEventListener('click', function() {
         console.log("Generate QR Code button clicked");
@@ -36,6 +40,38 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    bgColorBtn.addEventListener('click', function() {
+        console.log("Change Background Color button clicked");
+        let colorPicker = document.createElement("input");
+        colorPicker.type = "color";
+        colorPicker.value = backgroundColor;
+        colorPicker.addEventListener("input", function() {
+            backgroundColor = colorPicker.value;
+        });
+        colorPicker.addEventListener("change", function() {
+            if (canvas) {
+                generateQRCode();
+            }
+        });
+        colorPicker.click();
+    });
+
+    qrColorBtn.addEventListener('click', function() {
+        console.log("Change QR Code Color button clicked");
+        let colorPicker = document.createElement("input");
+        colorPicker.type = "color";
+        colorPicker.value = qrCodeColor;
+        colorPicker.addEventListener("input", function() {
+            qrCodeColor = colorPicker.value;
+        });
+        colorPicker.addEventListener("change", function() {
+            if (canvas) {
+                generateQRCode();
+            }
+        });
+        colorPicker.click();
+    });
+
     function generateQRCode() {
         const url = document.getElementById('url').value;
         const logoFile = document.getElementById('logo').files[0];
@@ -48,6 +84,8 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("Logo Size:", logoSize);
         console.log("Padding:", padding);
         console.log("Complexity:", complexity);
+        console.log("Background Color:", backgroundColor);
+        console.log("QR Code Color:", qrCodeColor);
 
         if (!url) {
             alert('Please enter a URL.');
@@ -59,6 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        // Hanya menghapus elemen canvas dari qrDisplay, bukan seluruh konten
         if (canvas && qrDisplay.contains(canvas)) {
             qrDisplay.removeChild(canvas);
         }
@@ -68,7 +107,9 @@ document.addEventListener('DOMContentLoaded', function () {
             text: url,
             width: 300,
             height: 300,
-            errorCorrectionLevel: 'H', // Set error correction level
+            colorDark: qrCodeColor,
+            colorLight: backgroundColor,
+            errorCorrectionLevel: 'H',
             version: complexity
         };
 
@@ -79,50 +120,54 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             if (logoFile) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const logoDataUrl = e.target.result;
-                    const context = canvas.getContext('2d');
-                    const logo = new Image();
-                    logo.src = logoDataUrl;
-                    logo.onload = function () {
-                        const logoWidth = canvas.width * logoSize / 10;
-                        const logoHeight = logoWidth * (logo.height / logo.width);
-                        const logoX = (canvas.width - logoWidth) / 2;
-                        const logoY = (canvas.height - logoHeight) / 2;
-
-                        // Draw rounded white rectangle
-                        const rectX = logoX - padding;
-                        const rectY = logoY - padding;
-                        const rectWidth = logoWidth + 2 * padding;
-                        const rectHeight = logoHeight + 2 * padding;
-                        const radius = padding;
-
-                        context.fillStyle = 'white';
-                        context.beginPath();
-                        context.moveTo(rectX + radius, rectY);
-                        context.lineTo(rectX + rectWidth - radius, rectY);
-                        context.quadraticCurveTo(rectX + rectWidth, rectY, rectX + rectWidth, rectY + radius);
-                        context.lineTo(rectX + rectWidth, rectY + rectHeight - radius);
-                        context.quadraticCurveTo(rectX + rectWidth, rectY + rectHeight, rectX + rectWidth - radius, rectY + rectHeight);
-                        context.lineTo(rectX + radius, rectY + rectHeight);
-                        context.quadraticCurveTo(rectX, rectY + rectHeight, rectX, rectY + rectHeight - radius);
-                        context.lineTo(rectX, rectY + radius);
-                        context.quadraticCurveTo(rectX, rectY, rectX + radius, rectY);
-                        context.closePath();
-                        context.fill();
-
-                        // Draw logo
-                        context.drawImage(logo, logoX, logoY, logoWidth, logoHeight);
-                    };
-                };
-                reader.readAsDataURL(logoFile);
+                addLogoToCanvas(logoFile, canvas, logoSize, padding);
             }
         });
 
-        qrDisplay.innerHTML = ''; // Clear the "No QR code generated." text
+        // Tambahkan canvas ke qrDisplay tanpa menghapus tombol color picker
         qrDisplay.appendChild(canvas);
+        qrDisplay.appendChild(bgColorBtn);
+        qrDisplay.appendChild(qrColorBtn);
         qrCodeData = canvas;
+    }
+
+    function addLogoToCanvas(logoFile, canvas, logoSize, padding) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const logoDataUrl = e.target.result;
+            const context = canvas.getContext('2d');
+            const logo = new Image();
+            logo.src = logoDataUrl;
+            logo.onload = function () {
+                const logoWidth = canvas.width * logoSize / 10;
+                const logoHeight = logoWidth * (logo.height / logo.width);
+                const logoX = (canvas.width - logoWidth) / 2;
+                const logoY = (canvas.height - logoHeight) / 2;
+
+                // Draw rounded white rectangle
+                drawRoundedRect(context, logoX - padding, logoY - padding, logoWidth + 2 * padding, logoHeight + 2 * padding, padding);
+
+                // Draw logo
+                context.drawImage(logo, logoX, logoY, logoWidth, logoHeight);
+            };
+        };
+        reader.readAsDataURL(logoFile);
+    }
+
+    function drawRoundedRect(context, x, y, width, height, radius) {
+        context.fillStyle = 'white';
+        context.beginPath();
+        context.moveTo(x + radius, y);
+        context.lineTo(x + width - radius, y);
+        context.quadraticCurveTo(x + width, y, x + width, y + radius);
+        context.lineTo(x + width, y + height - radius);
+        context.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        context.lineTo(x + radius, y + height);
+        context.quadraticCurveTo(x, y + height, x, y + height - radius);
+        context.lineTo(x, y + radius);
+        context.quadraticCurveTo(x, y, x + radius, y);
+        context.closePath();
+        context.fill();
     }
 
     function saveQRCode() {
@@ -143,11 +188,15 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('logo-size').value = 4;
             document.getElementById('padding').value = 10;
             document.getElementById('complexity').value = 10;
+            backgroundColor = '#ffffff';
+            qrCodeColor = '#000000';
             if (canvas && qrDisplay.contains(canvas)) {
                 qrDisplay.removeChild(canvas);
                 canvas = null;
             }
             qrDisplay.innerHTML = '<p>No QR code generated.</p>';
+            qrDisplay.appendChild(bgColorBtn);
+            qrDisplay.appendChild(qrColorBtn);
             qrCodeData = null;
         } catch (error) {
             console.error("Error resetting form:", error);

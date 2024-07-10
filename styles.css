@@ -1,3 +1,4 @@
+/* styles.css */
 body {
     background-color: #1a1a1a;
     color: #e0e0e0;
@@ -34,18 +35,23 @@ body {
 
 .main {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     padding: 20px;
     gap: 20px;
+    width: 100%;
+    max-width: 1200px;
 }
 
 .left-panel, .right-panel {
     background-color: #333;
     padding: 20px;
     border-radius: 10px;
+    flex: 1;
+    min-width: 300px;
 }
 
-.input-section, .logo-section, .complexity-section {
+.input-section, .logo-section, .complexity-section, .button-section {
     margin-bottom: 20px;
 }
 
@@ -86,9 +92,16 @@ button:hover {
     border: 1px solid #444;
     border-radius: 10px;
     text-align: center;
+    position: relative;
+}
+
+.qr-display button {
+    width: auto;
+    margin-top: 10px;
 }
 
 footer {
     margin-top: 20px;
     color: #e0e0e0;
+    text-align: center;
 }
