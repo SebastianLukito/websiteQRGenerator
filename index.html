@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Unified Numeric Tagging Utility Labeler (QUNTUL)</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
+    <script defer src="qr-code-handler.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="marquee">
+            <p>Quick Unified Numeric Tagging Utility Labeler (QUNTUL) Quick Unified Numeric Tagging Utility Labeler (QUNTUL)</p>
+        </div>
+        <div class="main">
+            <div class="left-panel">
+                <div class="input-section">
+                    <label for="url">Enter URL Here:</label>
+                    <input type="text" id="url" name="url" placeholder="Enter URL">
+                </div>
+                <div class="logo-section">
+                    <label for="logo">Upload Logo:</label>
+                    <input type="file" id="logo" name="logo">
+                    <label for="logo-size">Logo Size (1-10):</label>
+                    <input type="number" id="logo-size" name="logo-size" value="4">
+                    <label for="padding">Padding:</label>
+                    <input type="number" id="padding" name="padding" value="10">
+                </div>
+                <div class="complexity-section">
+                    <label for="complexity">QR Code Complexity (1-40):</label>
+                    <input type="number" id="complexity" name="complexity" value="10">
+                </div>
+                <button id="generate-btn">Generate QR Code</button>
+                <button id="save-btn">Save QR Code</button>
+                <button id="new-btn">New QR Code</button>
+                <button id="bg-color-btn">Change Background Color</button>
+                <button id="qr-color-btn">Change QR Code Color</button>
+            </div>
+            <div class="right-panel">
+                <div class="qr-display" id="qr-display">
+                    <p>No QR code generated.</p>
+                </div>
+            </div>
+        </div>
+        <footer>
+            <p>Sebastianus Lukito 2024</p>
+        </footer>
+    </div>
+</body>
+</html>
